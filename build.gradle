@@ -1,0 +1,77 @@
+configurations.all {
+    // check for updates every build
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+/*
+  SPRING BOOT FOR TEST
+
+ */
+
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "http://oss.sonatype.org/content/repositories/snapshots"
+        }
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.0.4"
+    }
+}
+
+allprojects {
+    apply plugin: "kotlin"
+
+    group = "org.jetbrains.kotlin"
+    version = "0.1-SNAPSHOT"
+
+    repositories {
+        mavenCentral()
+        maven {
+            url "http://repository.jetbrains.com/spek"
+        }
+        maven {
+            url "http://oss.sonatype.org/content/repositories/snapshots"
+        }
+    }
+
+    apply plugin: "maven"
+
+    dependencies {
+        compile 'joda-time:joda-time:2.9.4'
+        compile group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.0.4', changing: true
+        testCompile group: 'org.jetbrains.spek', name: 'spek', version: '1.0.9', changing: true
+    }
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives sourcesJar
+    }
+
+/*
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                repository(url: "http://repository.jetbrains.com/kotlin-nosql") {
+                    authentication(userName: deploy_username, password: deploy_password)
+                }
+                pom.groupId = project.group
+                pom.artifactId = project.name
+                pom.version = project.version
+            }
+        }
+    }
+*/
+}
+
+project(':kotlin-nosql-mongodb') {
+    dependencies {
+        compile project(':')
+        compile 'org.mongodb:mongo-java-driver:3.3.0'
+    }
+}
